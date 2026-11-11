@@ -1,4 +1,6 @@
+# 1. All Blanket measurement Calculations size, area, yran weight and number of yarn balls needed for the project.
 import math
+from turtle import back
 Blanket_sizes_inches = {
     "lovey": {"width":12.0, "length": 12.0},
     "security":{"width": 16.0, "length": 16.0},
@@ -48,4 +50,88 @@ def calculate_blanket_yarn(
     "total_yarn_grams": total_yarn_grams,
     "balls_needed": balls_needed,
     }
+# Universal gauge calculator of the crochet project.
+def calculate_gauge(swatch_dimension: float, 
+                    stich_count:int,
+                    row_count: int
+                    )-> dict:
+    """ Calculates the row density per inch or cm from a test swach.
+    Using Raise ValueError if any input is zero or negative"""
+    if swatch_dimension <=0:
+        raise ValueError("Swatch dimension must be a positive number")
+    if stich_count <=0:
+        raise ValueError("Stich count can not be zero or negative")
+    stiches_per_unit = stich_count / swatch_dimension
+    rows_per_unit = row_count / swatch_dimension
+    return {
+        "stiches_per_unit": round(stiches_per_unit,2),
+        "rows_per_unit": round(rows_per_unit,2)
 
+    }
+
+#3. Muffler foundation chain calculator
+def calculate_muffler_chain(
+        desired_length: float,
+        swatch_width: float,
+        stiches_in_swatch: int,
+        turning_chains: int = 2, 
+)-> int:
+    """ Formula for muffler = ( Desired Muffler Length / Swatch Width) x Stiches in Swatch + Turning Chains.
+    Note: Turninng chains in most project is 2 unless using double crochet stiches."""
+    if desired_length <=0:
+        raise ValueError("Desitred length can not be zero or negative")
+    if swatch_width <=0:
+        raise ValueError("Swatch width can not be zero or negative")
+    if turning_chains < 0:
+        raise ValueError("Turning chains can not be negative")
+    raw_chains = (desired_length / swatch_width) * stiches_in_swatch
+    return round(raw_chains) + turning_chains
+
+#4. Crochet Cardigan neck line stich calculator which is the base and depending on the body measurements depnds."
+
+def calculate_cardigan_neck(
+        total_chains: int
+        ) -> dict:
+    #35% of the original chain will beon the front and that equal number will be on the back and 15% of the chain will be on shoulders
+        if total_chains <=0:
+            raise ValueError("Total chains can not be zero or negative")
+        back= round(total_chains * 0.35)
+        half_back = back/2
+        left_front = round(half_back)
+        right_front= round(half_back)
+        right_front = back - left_front
+        left_shoulder =round(total_chains * 0.15)
+        right_shoulder= round(total_chains * 0.15)
+        current_sum = back + left_front+ right_front+ left_shoulder + right_shoulder
+        difference = total_chains - current_sum
+        if difference != 0:
+            adjustment = round(difference/2)
+            left_shoulder -=adjustment
+            right_shoulder-=(difference-adjustment)
+        return{
+            "back": back,
+            "left_front": left_front,
+            "right_front": right_front,
+            "left_shoulder": left_shoulder,
+            "right_shoulder": right_shoulder,
+            "total": back + left_front + right_front + left_shoulder + right_shoulder
+        }
+
+# 5. Time estimation 
+def estimate_crafting_time(
+        total_stiches: int,
+        stiches_per_minute: int =20,
+)->dict:
+    if total_stiches <=0:
+        raise ValueError("Total stiches can not be negative or zero")
+    if stiches_per_minute <=0:
+        raise ValueError("Stiches per minute cannot be negative or zero")
+    total_minutes = total_stiches / stiches_per_minute
+    hours= int(total_minutes // 60)  
+    minutes = round(total_minutes % 60)
+    return{
+        "total_minutes": total_minutes,
+        "hours": hours,
+        "minutes": minutes,
+        "formatted":f"{hours} hr {minutes} min",   
+          }    
