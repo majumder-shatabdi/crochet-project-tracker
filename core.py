@@ -1,6 +1,6 @@
 # 1. All Blanket measurement Calculations size, area, yran weight and number of yarn balls needed for the project.
 import math
-from turtle import back
+
 Blanket_sizes_inches = {
     "lovey": {"width":12.0, "length": 12.0},
     "security":{"width": 16.0, "length": 16.0},
@@ -34,7 +34,7 @@ def adjust_stich(raw_stiches: int, multiple: int=1, plus: int = 0) -> int:
         adjusted_base =base - remainder 
 
     if adjusted_base <=0:
-        adjuste_base = multiple
+        adjusted_base = multiple
     return adjusted_base + plus
 
 # 2. Granny Square Blanket 
@@ -84,7 +84,10 @@ def calculate_gauge(swatch_dimension: float,
         raise ValueError("Swatch dimension must be a positive number")
     if stich_count <=0:
         raise ValueError("Stich count can not be zero or negative")
+    
     stiches_per_unit = stich_count / swatch_dimension
+    if row_count <=0:
+            raise ValueError("Row count can not be zero or negative")
     rows_per_unit = row_count / swatch_dimension
     return {
         "stiches_per_unit": round(stiches_per_unit,2),
@@ -124,24 +127,22 @@ def calculate_cardigan_neck(
         right_front= math.ceil(half_back)
         right_front = back - left_front
         left_shoulder =round(total_chains * 0.15)
-        right_shoulder= round(total_chains * 0.15)
-        current_sum = back + left_front+ right_front+ left_shoulder + right_shoulder
-        difference = total_chains - current_sum
-        if difference >0:
-            adjustment = round(difference/2)
-            back-=1
-            left_front-= (difference -1)
-        elif difference < 0:
-            back += 1ss
-            left_front += (abs(difference)-1)
-        return{
-            "back": back,
-            "left_front": left_front,
+        right_shoulder= left_shoulder
+        left_chain = total_chains -(left_shoulder + right_shoulder)
+        back= left_chain // 2
+        front= left_chain- back
+        left_front = (front // 2)
+        right_front = front - left_front
+        return {
+            "back" : back,
+            "front" : front,
+            "left_front" : left_front,
             "right_front": right_front,
             "left_shoulder": left_shoulder,
             "right_shoulder": right_shoulder,
-            "total":back + left_front + right_front+ left_shoulder + right_shoulder
+            "total_chains": back + left_front + right_front + left_shoulder + right_shoulder 
         }
+
 # 5. Time estimation 
 def estimate_crafting_time(
         total_stiches: int,
