@@ -15,6 +15,29 @@ Blanket_sizes_inches = {
     "king":{"width":90.0,"length":108.0}
 }
 
+# 1.1 Pattern stich Multiples
+def adjust_stich(raw_stiches: int, multiple: int=1, plus: int = 0) -> int:
+    if raw_stiches <=0:
+        raise ValueError("Raw stiches must be a positive number.")
+    if multiple <=0:
+        raise ValueError("Pattern Multiple must be a positive number")
+    if plus <0:
+        raise ValueError("Plus stiches must be a positive number")
+    
+    base = raw_stiches - plus
+    remainder = base % multiple
+    if remainder == 0:
+        adjusted_base = base
+    elif remainder >= (multiple / 2.0):
+        adjusted_base = base + (multiple - remainder)
+    else:
+        adjusted_base =base - remainder 
+
+    if adjusted_base <=0:
+        adjuste_base = multiple
+    return adjusted_base + plus
+
+# 2. Granny Square Blanket 
 
 def calculate_blanket_yarn(
         blanket_width: float,
@@ -50,7 +73,7 @@ def calculate_blanket_yarn(
     "total_yarn_grams": total_yarn_grams,
     "balls_needed": balls_needed,
     }
-# Universal gauge calculator of the crochet project.
+# 3. Universal gauge calculator of the crochet project.
 def calculate_gauge(swatch_dimension: float, 
                     stich_count:int,
                     row_count: int
@@ -97,26 +120,28 @@ def calculate_cardigan_neck(
             raise ValueError("Total chains can not be zero or negative")
         back= round(total_chains * 0.35)
         half_back = back/2
-        left_front = round(half_back)
-        right_front= round(half_back)
+        left_front = math.ceil(half_back)
+        right_front= math.ceil(half_back)
         right_front = back - left_front
         left_shoulder =round(total_chains * 0.15)
         right_shoulder= round(total_chains * 0.15)
         current_sum = back + left_front+ right_front+ left_shoulder + right_shoulder
         difference = total_chains - current_sum
-        if difference != 0:
+        if difference >0:
             adjustment = round(difference/2)
-            left_shoulder -=adjustment
-            right_shoulder-=(difference-adjustment)
+            back-=1
+            left_front-= (difference -1)
+        elif difference < 0:
+            back += 1ss
+            left_front += (abs(difference)-1)
         return{
             "back": back,
             "left_front": left_front,
             "right_front": right_front,
             "left_shoulder": left_shoulder,
             "right_shoulder": right_shoulder,
-            "total": back + left_front + right_front + left_shoulder + right_shoulder
+            "total":back + left_front + right_front+ left_shoulder + right_shoulder
         }
-
 # 5. Time estimation 
 def estimate_crafting_time(
         total_stiches: int,
