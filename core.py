@@ -104,11 +104,13 @@ def calculate_muffler_chain(
 )-> int:
     """ Formula for muffler = ( Desired Muffler Length / Swatch Width) x Stiches in Swatch + Turning Chains.
     Note: Turninng chains in most project is 2 unless using double crochet stiches."""
+    if stiches_in_swatch <= 0:
+        raise ValueError("Stiches in swatch can not be zero or negative")
     if desired_length <=0:
         raise ValueError("Desitred length can not be zero or negative")
     if swatch_width <=0:
         raise ValueError("Swatch width can not be zero or negative")
-    if turning_chains < 0:
+    if turning_chains <= 0:
         raise ValueError("Turning chains can not be negative")
     raw_chains = (desired_length / swatch_width) * stiches_in_swatch
     return round(raw_chains) + turning_chains
