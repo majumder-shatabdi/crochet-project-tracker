@@ -1,3 +1,13 @@
+"""
+GenAI Acknowledgment (Assessment 1 - Gen-AI-Assisted Reviewer):
+In compliance with Keele University academic integrity policies and module guidelines,
+generative AI (Google Gemini) was utilized strictly as an automated code reviewer. 
+The tool assisted in identifying syntax typos, unhandled cases, and logical errors (such as rounding drift in garment splits and dictionary key mismatches). 
+All code structures,  logic, algorithmic decisions, and test cases were written
+(Help of Ai was taken on how to write these test cases and how to check that on terminal but the calculations and logic was given by Shatabdi),
+ understood, and verified by Shatabdi Majumder. 
+"""
+
 # 1. All Blanket measurement Calculations size, area, yran weight and number of yarn balls needed for the project.
 import math
 
