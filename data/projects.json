@@ -8,5 +8,15 @@
         "status": "In Progress",
         "hook_size": "4.0 mm",
         "notes": ""
+    },
+    {
+        "project_id": "2",
+        "name": "Muffler",
+        "craft_type": "Scarf",
+        "target_rows": 50,
+        "current_row": 0,
+        "status": "In Progress",
+        "hook_size": "4",
+        "notes": "Its custom made from youtube tutorial"
     }
 ]
