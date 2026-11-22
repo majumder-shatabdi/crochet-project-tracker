@@ -1,5 +1,10 @@
 import storage
-from models import Project
+from models import(
+    Project,
+    search_projects,
+    bubble_sort_name,
+    bubble_sort_project_row
+)
 def show_menu():
 #Will print the menu iption on the screen.
     print("\n" + "=" *40)
@@ -58,29 +63,6 @@ def add_new_project(projects_list):
     storage.save_projects(projects_list)
     print(f"\nSuccess! Project'{name}' has been created and saved.")
 
-def main():
-# This loop will run until the user choose to exit.
-    projects_list = storage.load_projects()
-    while True:
-        show_menu()
-        choice =input("Please choose an option (1-4):").strip()
-
-        if choice=="1":
-            view_all_projects(projects_list)
-        elif choice =="2":
-            add_new_project(projects_list)
-        elif choice == 3:
-            row_counter(projects_list)
-        elif choice =="4":
-# Saves all the data before closing
-            storage.save_projects(projects_list)
-            print("\nAll projects saved safely. Goodbye and happy crafting!")
-            break
-        else: 
-            print("\nInvalid choice! Please type 1,2,3,4")
-if __name__ =="__main__":
-    main()
-
 
 def row_counter(project_list):
 # Interactive row counter with live Undo and redo stack operations.
@@ -128,5 +110,53 @@ def row_counter(project_list):
             break
         else:
             print("Invalid Input!  Use +, -, u, r, or q.")
+def search_sort_menu(projects_list):
+# Will allow user to search projects by keyword using bubble sort algorithm
+    print("\n Search and Sort Projects")
+    if len(projects_list) == 0:
+        print("No projects to search or sort. Please add a project first!")
+        return
+        print("1. Search by Keyword (Name or Craft Type)")
+        print("2. Sort Alphabatically by Name (A to Z)")
+        print("3. Sort by Row count (Lowest to Highest)")
+        sub_choice = input("Choose (1 - 3): ").strip()
 
-    
+        if sub_choice == "1":
+            term = input("Enter search word: ").strip()
+            results = search_projects(projects_lis, term)
+            print(f"\nFound {len(results)} matching project :")
+            view_all_projects(results)
+
+        elif sub_choice == "2":
+            sorted_projects = Bubble_sort_name(projects_list)
+            print("\nProjects are Sorted by Name: (A to Z) :")
+            view_all_projects(sorted_projects)
+        elif sub_choice == "3":
+            sorted_projects = bubble_sort_project_row(projects_list)
+            print("\nProjects are sorted by Row Count : ")
+            view_all_projects(sorted_projects)
+        else:
+            print("Invalid Choice! Returning to main menu.")
+
+def main():
+# Main loop loading to show menu and projects
+    projects_list = storage.load_projects()
+    while True:
+        show_menu()
+        choice = input("Please choose an option ( 1 - 5 )")
+        if choice == "1":
+            view_all_projects(projects_list)
+        elif choice == "2":
+            add_new_project(projects_list)
+        elif choice == "3":
+            row_counter(projects_list)
+        elif choice == 4:
+            search_sort_menu(projects_list)
+        elif choice ==5:
+            storage.save_projects(projects_list)
+            print("\nAll projects are saved safely. Goodbye and Happy Crafting!")
+            break
+        else:
+            print("\nInvalid choice! PLease type a Number from 1 to 5.")
+    if __name__ == "__main__":
+        main()
