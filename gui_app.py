@@ -1,3 +1,16 @@
+"""
+GenAI Acknowledgment (Assessment 1 - Assisted Reviewer):
+In compliance with Keele University academic integrity policies, I used 
+generative AI (Google Gemini) strictly as an assisted code reviewer and debugger. 
+I consulted the tool to help diagnose runtime exceptions (such as Tkinter TclError 
+and NameError), identify subtle typographical errors that were difficult to spot 
+manually (e.g., grid parameter misspellings and geometry string syntax), and check 
+function execution flow. All core logic, project architecture, functional decisions, 
+and final code implementations were independently written, tested, and verified by me.
+
+— Shatabdi Majumder
+"""
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 import storage
@@ -5,7 +18,7 @@ from models import Project
 # Setup and data loading
 root = tk.Tk()
 root.title("StichCraft - Crochet Assistant")
-root.geometry("650 x 550")
+root.geometry("650x550")
 # For loding the existing saved projects
 project_list = storage.load_projects()
 # Tab Navigation Notebook
@@ -21,22 +34,22 @@ title.pack(pady=5)
 project_listbox = tk.Listbox(tab_projects, height = 7, width= 70, font= ("Courier", 9))
 project_listbox.pack(padx=10, pady= 5)
 
-separator_project = ttk.Separator_Project(tab_projects, orient = "horizontal")
-separator_project.pack(fill = "x", pdx = 15, pady= 10)
-from_title = tk.label(tab_projects, text = "Create New Project", font= ("Arial", 12,"bold"))
+separator_project = ttk.Separator(tab_projects, orient = "horizontal")
+separator_project.pack(fill = "x", padx = 15, pady= 10)
+from_title = tk.Label(tab_projects, text = "Create New Project", font= ("Arial", 12,"bold"))
 from_title.pack(pady=5)
 from_frame = tk.Frame(tab_projects)
 from_frame.pack(pady=5)
 # Entry Boxes
-tk.Label(from_frame, text ="Project Name: ").grid(row=1,coulmn= 0, sticky ="e", psdx = 5, pady = 3)
+tk.Label(from_frame, text="Project Name: ").grid(row=0, column=0, sticky="e", padx=5, pady=3)
 entry_name = tk.Entry(from_frame, width=30)
-entry_name.grid(row=0, column=1, padx=5, pdy=3)
+entry_name.grid(row=0, column=1, padx=5, pady=3)
 
-tk.Label(from_frame,text="Craft Type:").grid(row=1,column=0,sticky="e",padx=5,pad=3)
+tk.Label(from_frame,text="Craft Type:").grid(row=1,column=0,sticky="e",padx=5,pady=3)
 entry_type=tk.Entry(from_frame,width=30)
 entry_type.grid(row=1,column=1,padx =5,pady=3)
 
-tk.Label(from_frame,text="Target Rows: ".grid(row=2, column=0, sticky="e",padx=5,pady=3))
+tk.Label(from_frame, text="Target Rows: ").grid(row=2, column=0, sticky="e", padx=5, pady=3)
 entry_rows = tk.Entry(from_frame, width=30)
 entry_rows.grid(row=2,column=1,padx=5,pady=3)
 
@@ -44,17 +57,15 @@ tk.Label(from_frame, text="Hook size: ").grid(row=3,column=0,sticky = "e", padx 
 entry_hook=tk.Entry(from_frame, width=30)
 entry_hook.insert(0,"4.0 mm")
 entry_hook.grid(row=4,column= 1,padx=5,pady=5)
+entry_hook.grid(row=3, column=1, padx=5, pady=3)
 
-
-
-tk.Label(from_frame, text="Enter notes :").grid(row=3,column=0,sticky="e",padx=5,pady=3)
-entry_notes = tk.Etry(from_frame,width=30)
-entry_notes.grid(row=4,column=1,padx=5,pdy=3)
-
+tk.Label(from_frame, text="Enter notes: ").grid(row=4, column=0, sticky="e", padx=5, pady=3)
+entry_notes = tk.Entry(from_frame, width=30)
+entry_notes.grid(row=4, column=1, padx=5, pady=3)
 #3.Functions
 def refresh_project_listbox():
 # Will clear and reload the projects into the visual list.
-    project_listbox.delete(0,tk.End)
+    project_listbox.delete(0, tk.END)
     for p in project_list:
         progress= p.get_progress_percentage()
         display_text = f"[{p.project_id}] {p.name} ({p.craft_type}) - Row: {p.current_row}/{p.target_rows} ({progress:.1f}%) [{p.status}]"
@@ -100,13 +111,12 @@ def add_p_click():
     entry_notes.delete(0,tk.END)
     messagebox.showinfo("Success", f"Project '{name}' created and saved!")
 #4. For attaching button comand and run
-button = tk.Button(tab_projects, text="Add Project", font=("Arial", 10, "bold"), bg = "3d1e7dd", comand = add_p_click)
+button = tk.Button(tab_projects, text="Add Project", font=("Arial", 10, "bold"), bg="#d1e7dd", command=add_p_click)
 button.pack(pady=10)
 # To fill listbox with saved projects on start
 
 refresh_project_listbox()
 if __name__ =="__main__":
     root.mainloop()
-    
 
 
