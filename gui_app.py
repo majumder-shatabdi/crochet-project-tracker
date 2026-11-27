@@ -14,6 +14,13 @@ and final code implementations were independently written, tested, and verified 
 import tkinter as tk
 from tkinter import ttk, messagebox
 import storage
+from main import(
+calculate_blanket_yarn,
+calculate_cardigan_neck,
+calculate_gauge,
+calculate_muffler_chain,
+estimate_crafting_time
+)
 from models import Project
 # Setup and data loading
 root = tk.Tk()
@@ -26,7 +33,11 @@ notebook = ttk.Notebook(root)
 notebook.pack(fill= "both", expand = True, padx = 10, pady = 10)
 # First Tab for project management
 tab_projects= tk.Frame(notebook)
-notebook.add(tab_projects, text = "Project Management")
+notebook.add(tab_projects, text = " Project Management ")
+tab_counter = tk.Frame(notebook)
+notebook.add(tab_counter, text = " Row Counter ")
+tab_calculator = tk.Frame(notebook)
+notebook.add(tab_calculator, text = " Calculators ")
 
 title = tk.Label(tab_projects, text = "Your Saved Projects", font=("Arial", 14, "bold"))
 title.pack(pady=5)
@@ -101,7 +112,7 @@ def add_p_click():
         hook_size= hook,
         notes = notes)
     project_list.append(new_project)
-    storage.save_project(project_list)
+    storage.save_projects(project_list)
     refresh_project_listbox()
 
     entry_name.delete(0,tk.END)
@@ -114,6 +125,83 @@ def add_p_click():
 button = tk.Button(tab_projects, text="Add Project", font=("Arial", 10, "bold"), bg="#d1e7dd", command=add_p_click)
 button.pack(pady=10)
 # To fill listbox with saved projects on start
+
+# Tab for Crochet calculators and logic
+calculator_title =tk.Label(tab_calculator, text = "Crochet Calculators", font = ("Arial", 14, "bold"))
+calculator_title.pack(pady=5)
+
+# First section : Blanket and Yarn balls Calculator
+blanket_frame= tk.LabelFrame(tab_calculator, text = "Granny Square Blanket Calculator", font = ("Arial", 10,"bold"), padx= 10, pady=5)
+blanket_frame.pack(fill="x",padx =15, pady=5)
+tk.Label(blanket_frame, text = "Width (in): ").grid(row=0, column = 0, padx=3, pady=2)
+calculator_blanket_w = tk.Entry (blanket_frame, width = 8)
+calculator_blanket_w.grid(row=0,column = 1, padx= 3, pady = 2)
+
+tk.Label(blanket_frame, text = "Length (in): ").grid(row=0, column = 2, padx = 3, pady = 2)
+calculator_blanket_l = tk.Entry(blanket_frame, text = " Squares : - | Balls: - ", font = ("Arial", 9, "bold"), fg="#198754")
+calculator_blanket_l.grid(row=0,column=3,padx=3, pady=2)
+
+blanket_result_lbl = tk.Label(blanket_frame, text = "Squares : - | Balls: - ", font=("Arial", 9 , "bold"), fg = "#198754")
+blanket_result_lbl.grid(row=0, column =5, padx = 10, pady=2)
+
+def calculator_blanket():
+    try:
+        width = float(calculator_blanket_w.get().strip())
+        length= float(calculator_blanket_l.get().strip())
+        result = calculate_blanket_yarn(width,length)
+        blanket_result_lbl.config(text=f"Squares: {result['total_squares']} | 50g balls: {result['balls_needed']}")
+    except ValueError as e:
+        messagebox.showerror("Calculation Error", str(e))
+tk.Button(blanket_frame, text="Calculate", command =calculator_blanket, bg ="#e2e3e5").grid(row=0,column=4,padx=5,pady=2)
+
+
+# Cardigan neck split calculator
+cardigan_frame = tk.LabelFrame(tab_calculator,text="Cardigan Neck Split (Preserving the base chain)", font=("Arial", 10, "bold"), padx=10, pady=5)
+cardigan_frame.pack(fill="x", padx= 15, pady= 5) 
+tk.Label(cardigan_frame,text="Base chains (min 30): ").grid(row=0,column=0,padx=3,pady=2)
+calculate_cardigan_chain = tk.Entry(cardigan_frame, width= 8)
+calculate_cardigan_chain.grid(row=0, column= 1, padx=3, pady=2)
+
+cardigan_result_lbl = tk.Label(cardigan_frame, text = "Back : - | Front : - | Each Shoulder : - ", font=("Arial",9, "bold"), fg="#0678fd")
+cardigan_result_lbl.grid(row=1,column=0,columnspan=4, sticky="w", padx=5, pady=3)
+def calculator_cardigan():
+    try:
+        chains= int(calculate_cardigan_chain.get().strip())
+        result = calculate_cardigan_neck(chains)
+        cardigan_result_lbl.config(
+            text=f"Back: {result['back']} st | Front : {result['left_front']} & {result['right_front']} st | Shoulders: {result['left_shoulder']}| Total: {result['total']}"
+        )
+    except ValueError as e:
+        messagebox.showerror("Calculation Error:" , str(e))
+
+tk.Button(cardigan_frame, text = "Calculate", command = calculator_cardigan, bg = "#e2e3e5").grid(row=0,column = 2, padx=5, pady =2)
+
+# Crafting time estimation
+time_frame = tk.LabelFrame(tab_calculator, text = " Crafting Time Estimator ", font = ("Arial", 10, "bold"), padx=10, pady = 5)
+time_frame.pack(fill="x", padx=15, pady=5)
+tk.Label(time_frame, text = "Total Stiches: ").grid(row=0, column = 0, padx = 3, pady = 2)
+calculator_time_sts= tk.Entry(time_frame, width =8)
+calculator_time_sts.grid(row=0, column=1, padx=3, pady=2)
+
+tk.Label(time_frame, text = "Speed (stiche / min):").grid(row=0, column = 2, padx=3, pady = 2)
+calculator_time_speed= tk.Entry(time_frame, width=8)
+calculator_time_speed.insert(0, "20")
+calculator_time_speed.grid(row=0, column = 3, padx = 3, pady = 2)
+
+time_result_lbl= tk.Label(time_frame, text = "Estimated Time: ", font=("Arial", 9, "bold"), fg = "#6f42c1")
+time_result_lbl.grid(row=0, column = 5, padx=10, pady=2)
+
+
+def calculation_time():
+    try:
+        total_stich= int(calculator_time_sts.get().strip())
+        speed = int(calculator_time_speed.get().strip())
+        result = estimate_crafting_time(total_stich,speed)
+        time_result_lbl.config(text=f"Time: {result['formatted']} {result['total_minutes']} mins)")
+    except ValueError as e:
+        messagebox.showerror("Calculate Error", str(e))
+
+tk.Button(time_frame, text = "Estimate", command = calculation_time, bg ="#e2e3e5").grid(row=0,column= 4, padx=5, pady=2)
 
 refresh_project_listbox()
 if __name__ =="__main__":
