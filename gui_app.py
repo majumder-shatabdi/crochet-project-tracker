@@ -67,7 +67,7 @@ entry_rows.grid(row=2,column=1,padx=5,pady=3)
 tk.Label(from_frame, text="Hook size: ").grid(row=3,column=0,sticky = "e", padx = 5, pady=3)
 entry_hook=tk.Entry(from_frame, width=30)
 entry_hook.insert(0,"4.0 mm")
-entry_hook.grid(row=4,column= 1,padx=5,pady=5)
+
 entry_hook.grid(row=3, column=1, padx=5, pady=3)
 
 tk.Label(from_frame, text="Enter notes: ").grid(row=4, column=0, sticky="e", padx=5, pady=3)
@@ -114,6 +114,7 @@ def add_p_click():
     project_list.append(new_project)
     storage.save_projects(project_list)
     refresh_project_listbox()
+    dropdown_refresh()
 
     entry_name.delete(0,tk.END)
     entry_hook.delete(0,tk.END)
@@ -124,8 +125,89 @@ def add_p_click():
 #4. For attaching button comand and run
 button = tk.Button(tab_projects, text="Add Project", font=("Arial", 10, "bold"), bg="#d1e7dd", command=add_p_click)
 button.pack(pady=10)
-# To fill listbox with saved projects on start
 
+
+#Active row counter and logic
+counter_title = tk.Label(tab_counter, text = "Active Row Counter", font =("Arial", 14, "bold"))
+counter_title.pack(pady=10)
+# Slection of project from the dropdown
+select_frame = tk.Frame(tab_counter)
+select_frame.pack(pady=5)
+tk.Label(select_frame, text = "Select Project : ", font=("Arial", 10)).grid(row=0, column=0, padx=5)
+
+project_drop= ttk.Combobox(select_frame, width = 35, state = "readonly" )
+project_drop.grid(row=0, column= 1, padx=5)
+
+row_display = tk.Label(tab_counter, text = "Row : 0 / 0", font=("Arial", 28, "bold"), fg= "#0d6efd")
+row_display.pack(pady=15)
+
+stastus_display = tk.Label(tab_counter, text="Select a Project to start", font=("Arial", 11, "italic"))
+stastus_display.pack(pady=5)
+
+def selected_counter_project():
+    selection_name = project_drop.get()
+    for p in project_list:
+        if p.name == selection_name:
+            return p
+    return None
+def update_screen():
+    p = selected_counter_project()
+    if p:
+        progress = p.get_progress_percentage()
+        row_display.config(text = f"Row : {p.current_row} / {p.target_rows}")
+        stastus_display.config(text=f"Progress : {progress: .1f}% | Status: {p.status}")
+    else:
+        row_display.config(text = "Row: 0 / 0 ")
+        stastus_display.config(text = "Please select a project")
+
+def selected_project(event = None):
+    update_screen()
+
+def add_counter():
+    p = selected_counter_project()
+    if p :
+        p.increase_row()
+        storage.save_projects(project_list)
+        update_screen()
+        refresh_project_listbox()
+def minus_counter():
+    p = selected_counter_project()
+    if p:
+        p.decrease_row()
+        storage.save_projects(project_list)
+        update_screen()
+        refresh_project_listbox()
+def undo_counter():
+    p = selected_counter_project()
+    if p:
+        p.undo_row()
+        storage.save_projects(project_list)
+        update_screen()
+        refresh_project_listbox()
+def redo_counter():
+    p = selected_counter_project()
+    if p:
+        p.new_row()
+        storage.save_projects(project_list)
+        update_screen()
+        refresh_project_listbox()
+def dropdown_refresh():
+    names = [p.name for p in project_list]
+    project_drop["values"] = names
+    if len(names)> 0 and project_drop.get() == "":
+        project_drop.current(0)
+        update_screen()
+project_drop.bind("<<ComboboxSelected>>", selected_project)
+
+# Button for + , -, undo and redo
+button_frame = tk.Frame(tab_counter)
+button_frame.pack(pady = 15)
+tk.Button(button_frame, text = " -1 Row ", font=("Arial", 11, "bold"), bg = "#f8d7da", command = minus_counter, width = 10).grid(row=0, column = 0, padx = 8)
+tk.Button(button_frame, text = " +1 Row ", font= ("Arial", 12, "bold"), bg = "#d1e7dd", command= add_counter, width = 12).grid(row=0, column = 1, padx = 8)
+tk.Button(button_frame, text =" ⤺ Undo ", font=("Arial", 11), command=undo_counter, width=10).grid(row=1, column=0, padx=8, pady=10)
+tk.Button(button_frame, text=" ⤻ Redo ", font=("Arial", 11), command=redo_counter, width=10).grid(row=1, column=1, padx=8, pady=10)
+
+dropdown_refresh()
 # Tab for Crochet calculators and logic
 calculator_title =tk.Label(tab_calculator, text = "Crochet Calculators", font = ("Arial", 14, "bold"))
 calculator_title.pack(pady=5)
@@ -138,7 +220,7 @@ calculator_blanket_w = tk.Entry (blanket_frame, width = 8)
 calculator_blanket_w.grid(row=0,column = 1, padx= 3, pady = 2)
 
 tk.Label(blanket_frame, text = "Length (in): ").grid(row=0, column = 2, padx = 3, pady = 2)
-calculator_blanket_l = tk.Entry(blanket_frame, text = " Squares : - | Balls: - ", font = ("Arial", 9, "bold"), fg="#198754")
+calculator_blanket_l = tk.Entry(blanket_frame, width=8)
 calculator_blanket_l.grid(row=0,column=3,padx=3, pady=2)
 
 blanket_result_lbl = tk.Label(blanket_frame, text = "Squares : - | Balls: - ", font=("Arial", 9 , "bold"), fg = "#198754")
@@ -197,7 +279,7 @@ def calculation_time():
         total_stich= int(calculator_time_sts.get().strip())
         speed = int(calculator_time_speed.get().strip())
         result = estimate_crafting_time(total_stich,speed)
-        time_result_lbl.config(text=f"Time: {result['formatted']} {result['total_minutes']} mins)")
+        time_result_lbl.config(text=f"Time: {result['formatted']} ({result['total_minutes']} mins)")
     except ValueError as e:
         messagebox.showerror("Calculate Error", str(e))
 
